@@ -5,7 +5,7 @@ class Combatant:
     stats = {}
     initiative = 0
     initiative_mod = 0
-
+    
     def __init__(self, name):
         self.name = name
         self.stats = {
@@ -27,15 +27,18 @@ class Combatant:
         return self.initiative
 
     def change_stats(self, con, str, dex, int, wis, cha):
-        if con and self.validate_stat(con):
+        def validate_stat(stat):
+            return stat <= 20 and stat >= 1
+
+        if con and validate_stat(con):
             self.stats['con'] = con
-        if str and self.validate_stat(str):
+        if str and validate_stat(str):
             self.stats['str'] = str
-        if dex and self.validate_stat(dex):
+        if dex and validate_stat(dex):
             self.stats['dex'] = dex
-        if int and self.validate_stat(int):
+        if int and validate_stat(int):
             self.stats['int'] = int
-        if wis and self.validate_stat(wis):
+        if wis and validate_stat(wis):
             self.stats['wis'] = wis
 
     def validate_stat(self, stat):
