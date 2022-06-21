@@ -19,14 +19,9 @@ class Combatant:
         if stats:
             self.stats = stats
         else:
-            self.stats = {
-                self.Stats.CON: self.generate_stat(),
-                self.Stats.STR: self.generate_stat(),
-                self.Stats.DEX: self.generate_stat(),
-                self.Stats.INT: self.generate_stat(),
-                self.Stats.WIS: self.generate_stat(),
-                self.Stats.CHA: self.generate_stat()
-        }
+            for stat in self.Stats:
+                if stat not in self.stats:
+                    self.stats[stat] = self.generate_stat()
         self.initiative = self.get_initiative()
 
     def get_initiative(self):
@@ -39,12 +34,11 @@ class Combatant:
         self.initiative = randint(1,20) + self.get_initiative_mod()
         return self.initiative
 
-    def change_stats(self, stat, new_stat_val):
+    def change_stats(self, stat: Stats, new_stat_val: int):
         
         assert(new_stat_val <= 20 and new_stat_val >= 1)
 
-
-    def validate_stat(self, stat):
+    def validate_stat(self, stat: Stats):
         return stat <= 20 and stat >= 1
 
     def generate_stat(self):
@@ -66,7 +60,7 @@ class Combatant:
         return str(self.name) + '(' + str(self.get_initiative_mod()) + ')'
     
 if __name__=='__main__':
-    test = Combatant(name='test')
+    test = Combatant(name='test', stats=None)
     print(test.get_initiative())
     print('get_initiative: ' + str(test.get_initiative()))
     print('roll_initiative: ' + str(test.roll_initiative()))
