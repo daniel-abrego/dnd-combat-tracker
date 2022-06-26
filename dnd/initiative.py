@@ -1,4 +1,4 @@
-import combatant
+from .combatant import Combatant
 
 class Initiative:
     def __init__(self):
@@ -6,13 +6,13 @@ class Initiative:
         self.combatants = []
         self.rounds = 0
 
-    def add_combatant(self, new_combatant: combatant, initiative: int, dex_mod: int):
+    def add_combatant(self, new_combatant: Combatant, initiative: int, dex_mod: int):
         if new_combatant not in self.combatants:
             self.combatants.append(new_combatant)
         
         if initiative not in self.initiative:
             self.initiative[initiative] = []
-        self.initiative[initiative].append(combatant)
+        self.initiative[initiative].append(Combatant)
 
     def print_combatants(self):
         for c in self.combatants:
@@ -27,9 +27,9 @@ class Initiative:
 
 def main():
     combat_initiative = Initiative()
-    steve = combatant.Combatant('Steve', None)
+    steve = Combatant('Steve', None)
     steve.change_stats(steve.Stats.DEX, 20)
-    alex = combatant.Combatant('Alex', None)
+    alex = Combatant('Alex', None)
     alex.change_stats(alex.Stats.DEX, 10)
     combat_initiative.add_combatant(steve, 20, 1)
     combat_initiative.add_combatant(alex, 20, 2)
