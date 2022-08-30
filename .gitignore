@@ -1,5 +1,6 @@
 dnd/__pycache__/*
 test/__pycache__/*
 target/debug/*
+target/*
 *.exe
 *.pdb
