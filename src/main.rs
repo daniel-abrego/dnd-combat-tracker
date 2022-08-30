@@ -4,6 +4,30 @@ struct Initiative {
     combatants: Vec<String>
 }
 
+struct Combatant {
+    name: String,
+    dex_mod: u32,
+    conditions: Vec<CONDITIONS>
+}
+
+enum CONDITIONS {
+    BLINDED,
+    CHARMED,
+    DEAFENED,
+    EXHAUSTION,
+    FRIGHTENED,
+    GRAPPLED,
+    INCAPACITATED,
+    INVISIBLE,
+    PARALYZED,
+    PETRIFIED,
+    POISONED,
+    PRONE,
+    RESTRAINED,
+    STUNNED,
+    UNCONSCIOUS
+}
+
 fn main() {
     println!("Hello, world!");
     print_header(String::from("DND-COMBAT-TRACKER"));
