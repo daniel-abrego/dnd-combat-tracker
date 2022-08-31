@@ -81,6 +81,8 @@ fn main_menu(initiative: &mut Initiative) {
         "2" => println!("edit()"),
         "3" => println!("add_effect()"),
         "4" => println!("add_combatant()"),
+        "r" => println!("REFRESH"),
+        "x" => println!("EXIT"),
         _ => println!("unrecognized argument: {}", option),
     }
 
