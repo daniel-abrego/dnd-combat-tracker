@@ -3,7 +3,8 @@ use std::io;
 struct Initiative {
     round: u32,
     fight_name: String,
-    combatants: Vec<String>
+    combatants: Vec<String>,
+    curr_combatant_idx: i32
 }
 
 struct Combatant {
@@ -37,7 +38,8 @@ fn main() {
     let mut initiative = Initiative {
         round: 0,
         fight_name: String::from("Test"),
-        combatants: Vec::new()
+        combatants: Vec::new(),
+        curr_combatant_idx: -1
     };
 
     main_menu(&mut initiative);
@@ -77,8 +79,8 @@ fn main_menu(initiative: &mut Initiative) {
         let option = option_result.unwrap();
 
         match option.trim() {
-            "1" => next(),
-            "2" => edit(),
+            "1" => next(initiative),
+            "2" => edit(initiative),
             "3" => add_effect(),
             "4" => add_combatant(),
             "r" => {print_header(String::from("MAIN MENU"), '-'); print_options(&mut options)},
@@ -98,12 +100,28 @@ fn main_menu(initiative: &mut Initiative) {
     // }
 }
 
-fn next() {
+fn next(initiative: &mut Initiative) {
     println!("NEXT()");
+    initiative.curr_combatant_idx += 1;
 }
 
-fn edit() {
-    println!("EDIT()");
+fn edit(initiative: &mut Initiative) {
+    print_header(String::from("EDIT"), '-');
+    let mut options = ["CHANGE ROUND"];
+    print_options(&mut options);
+    loop {
+        let option_result = take_option();
+        let option = option_result.unwrap();
+
+        match option.trim() {
+            "1" => change_round(),
+            _ => break,
+        }
+    }
+}
+
+fn change_round() {
+
 }
 
 fn add_effect() {
