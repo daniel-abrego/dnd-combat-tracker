@@ -4,3 +4,4 @@ target/debug/*
 target/*
 *.exe
 *.pdb
+target/.rustc_info.json

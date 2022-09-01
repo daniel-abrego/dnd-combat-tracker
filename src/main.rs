@@ -72,18 +72,19 @@ fn main_menu(initiative: &mut Initiative) {
 
     let mut options = ["NEXT", "EDIT", "ADD EFFECT", "ADD COMBATANT"];
     print_options(&mut options);
+    loop {
+        let option_result = take_option();
+        let option = option_result.unwrap();
 
-    let option_result = take_option();
-    let option = option_result.unwrap();
-
-    match option.trim() {
-        "1" => println!("next()"),
-        "2" => println!("edit()"),
-        "3" => println!("add_effect()"),
-        "4" => println!("add_combatant()"),
-        "r" => println!("REFRESH"),
-        "x" => println!("EXIT"),
-        _ => println!("unrecognized argument: {}", option),
+        match option.trim() {
+            "1" => next(),
+            "2" => edit(),
+            "3" => add_effect(),
+            "4" => add_combatant(),
+            "r" => {print_header(String::from("MAIN MENU"), '-'); print_options(&mut options)},
+            "x" => break,
+            _ => println!("unrecognized argument: {}", option),
+        }
     }
 
     // initiative.combatants.push(String::from("Test1"));
@@ -95,6 +96,22 @@ fn main_menu(initiative: &mut Initiative) {
     // for (i, combatant) in initiative.combatants.iter().enumerate() {
     //     println!("{}: {}", i + 1, combatant);
     // }
+}
+
+fn next() {
+    println!("NEXT()");
+}
+
+fn edit() {
+    println!("EDIT()");
+}
+
+fn add_effect() {
+    println!("ADD_EFFECT()");
+}
+
+fn add_combatant() {
+    println!("ADD_COMBATANT()");
 }
 
 fn take_option() -> io::Result<String> {
