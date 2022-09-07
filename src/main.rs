@@ -1,35 +1,36 @@
 use std::io;
 
+const MAIN_MENU_OPTIONS: [&str; 4] = ["NEXT", "EDIT", "ADD EFFECT", "ADD COMBATANT"];
+
 struct Initiative {
     round: u32,
     fight_name: String,
-    combatants: Vec<String>,
+    combatants: Vec<Combatant>,
     curr_combatant_idx: i32
 }
 
 struct Combatant {
     name: String,
-    dex_mod: u32,
-    conditions: Vec<CONDITIONS>
+    dex_mod: u32
 }
 
-enum CONDITIONS {
-    BLINDED,
-    CHARMED,
-    DEAFENED,
-    EXHAUSTION,
-    FRIGHTENED,
-    GRAPPLED,
-    INCAPACITATED,
-    INVISIBLE,
-    PARALYZED,
-    PETRIFIED,
-    POISONED,
-    PRONE,
-    RESTRAINED,
-    STUNNED,
-    UNCONSCIOUS
-}
+// enum CONDITIONS {
+//     BLINDED,
+//     CHARMED,
+//     DEAFENED,
+//     EXHAUSTION,
+//     FRIGHTENED,
+//     GRAPPLED,
+//     INCAPACITATED,
+//     INVISIBLE,
+//     PARALYZED,
+//     PETRIFIED,
+//     POISONED,
+//     PRONE,
+//     RESTRAINED,
+//     STUNNED,
+//     UNCONSCIOUS
+// }
 
 fn main() {
     println!("Hello, world!");
@@ -72,8 +73,7 @@ fn main_menu(initiative: &mut Initiative) {
     print_header(String::from("MAIN MENU"), '-');
     initiative.fight_name = String::from("TESTING MAIN MENU");
 
-    let mut options = ["NEXT", "EDIT", "ADD EFFECT", "ADD COMBATANT"];
-    print_options(&mut options);
+    print_options(&mut MAIN_MENU_OPTIONS);
     loop {
         let option_result = take_option();
         let option = option_result.unwrap();
@@ -82,22 +82,12 @@ fn main_menu(initiative: &mut Initiative) {
             "1" => next(initiative),
             "2" => edit(initiative),
             "3" => add_effect(),
-            "4" => add_combatant(),
-            "r" => {print_header(String::from("MAIN MENU"), '-'); print_options(&mut options)},
+            "4" => add_combatant(initiative),
+            "r" => {print_header(String::from("MAIN MENU"), '-'); print_options(&mut MAIN_MENU_OPTIONS)},
             "x" => break,
             _ => println!("unrecognized argument: {}", option),
         }
     }
-
-    // initiative.combatants.push(String::from("Test1"));
-    // initiative.combatants.push(String::from("Test1"));
-    // initiative.combatants.push(String::from("Test1"));
-    // initiative.combatants.push(String::from("Test1"));
-
-    // println!("{} [{}]", initiative.fight_name, initiative.round);
-    // for (i, combatant) in initiative.combatants.iter().enumerate() {
-    //     println!("{}: {}", i + 1, combatant);
-    // }
 }
 
 fn next(initiative: &mut Initiative) {
@@ -114,28 +104,41 @@ fn edit(initiative: &mut Initiative) {
         let option = option_result.unwrap();
 
         match option.trim() {
-            "1" => change_round(),
+            "1" => change_round(initiative),
             _ => break,
         }
     }
+    refresh(&mut MAIN_MENU_OPTIONS);
 }
 
-fn change_round() {
+fn refresh(list_of_options: &mut [&str]) {
+    print_header(String::from("MAIN MENU"), '-');
+    print_options(list_of_options);
+}
 
+fn change_round(initiative: &mut Initiative) {
+    loop {
+        println!("Enter the new round number: ");
+        let option_result = take_option();
+        let option = option_result.unwrap().trim().parse::<u32>();
+        if !option.is_err() {
+            initiative.round = option.unwrap();
+            break;
+        }
+    }
 }
 
 fn add_effect() {
     println!("ADD_EFFECT()");
 }
 
-fn add_combatant() {
+fn add_combatant(initiative: &mut Initiative) {
     println!("ADD_COMBATANT()");
 }
 
 fn take_option() -> io::Result<String> {
     let mut buffer = String::new();
     io::stdin().read_line(&mut buffer)?;
-    println!();
     Ok(buffer)
 }
 
