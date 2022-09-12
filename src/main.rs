@@ -1,6 +1,6 @@
 use std::io;
 
-const MAIN_MENU_OPTIONS: [&str; 4] = ["NEXT", "EDIT", "ADD EFFECT", "ADD COMBATANT"];
+const MAIN_MENU_OPTIONS: &[&str; 4] = &["NEXT", "EDIT", "ADD EFFECT", "ADD COMBATANT"];
 
 struct Initiative {
     round: u32,
@@ -11,6 +11,7 @@ struct Initiative {
 
 struct Combatant {
     name: String,
+    initiative: u32,
     dex_mod: u32
 }
 
@@ -73,7 +74,7 @@ fn main_menu(initiative: &mut Initiative) {
     print_header(String::from("MAIN MENU"), '-');
     initiative.fight_name = String::from("TESTING MAIN MENU");
 
-    print_options(&mut MAIN_MENU_OPTIONS);
+    print_options(MAIN_MENU_OPTIONS);
     loop {
         let option_result = take_option();
         let option = option_result.unwrap();
@@ -83,7 +84,7 @@ fn main_menu(initiative: &mut Initiative) {
             "2" => edit(initiative),
             "3" => add_effect(),
             "4" => add_combatant(initiative),
-            "r" => {print_header(String::from("MAIN MENU"), '-'); print_options(&mut MAIN_MENU_OPTIONS)},
+            "r" => {print_header(String::from("MAIN MENU"), '-'); print_initiative(&initiative); print_options(MAIN_MENU_OPTIONS)},
             "x" => break,
             _ => println!("unrecognized argument: {}", option),
         }
@@ -108,11 +109,11 @@ fn edit(initiative: &mut Initiative) {
             _ => break,
         }
     }
-    refresh(&mut MAIN_MENU_OPTIONS);
+    refresh(String::from("MAIN MENU"), MAIN_MENU_OPTIONS);
 }
 
-fn refresh(list_of_options: &mut [&str]) {
-    print_header(String::from("MAIN MENU"), '-');
+fn refresh(menu_name: String, list_of_options: &[&str]) {
+    print_header(menu_name, '-');
     print_options(list_of_options);
 }
 
@@ -126,6 +127,7 @@ fn change_round(initiative: &mut Initiative) {
             break;
         }
     }
+    refresh(String::from("MAIN MENU"), MAIN_MENU_OPTIONS);
 }
 
 fn add_effect() {
@@ -134,6 +136,7 @@ fn add_effect() {
 
 fn add_combatant(initiative: &mut Initiative) {
     println!("ADD_COMBATANT()");
+    
 }
 
 fn take_option() -> io::Result<String> {
@@ -142,7 +145,15 @@ fn take_option() -> io::Result<String> {
     Ok(buffer)
 }
 
-fn print_options(list_of_options: &mut [&str]) {
+fn print_initiative(initiative: &Initiative) {
+    println!("{:-^80}", "");
+    for i in 0..initiative.combatants.len() {
+        println!("[{}]: {}", initiative.combatants[i].initiative, initiative.combatants[i].name);
+    }
+    println!("{:-^80}", "");
+}
+
+fn print_options(list_of_options: &[&str]) {
     for i in 0..list_of_options.len() {
         println!("[{}]: {}", i + 1, list_of_options[i]);
     }
