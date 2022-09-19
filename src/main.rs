@@ -72,6 +72,7 @@ fn print_minor_header(minor_header: String) {
  */
 fn main_menu(initiative: &mut Initiative) {
     print_header(String::from("MAIN MENU"), '-');
+    print_initiative(&initiative);
     initiative.fight_name = String::from("TESTING MAIN MENU");
 
     print_options(MAIN_MENU_OPTIONS);
@@ -94,30 +95,33 @@ fn main_menu(initiative: &mut Initiative) {
 fn next(initiative: &mut Initiative) {
     println!("NEXT()");
     initiative.curr_combatant_idx += 1;
+    refresh(String::from("MAIN MENU"), MAIN_MENU_OPTIONS, &initiative);
 }
 
 fn edit(initiative: &mut Initiative) {
     print_header(String::from("EDIT"), '-');
-    let mut options = ["CHANGE ROUND"];
+    let mut options = ["CHANGE ROUND", "CHANGE COMBAT NAME"];
     print_options(&mut options);
     loop {
         let option_result = take_option();
         let option = option_result.unwrap();
 
         match option.trim() {
-            "1" => change_round(initiative),
+            "1" => change_initiative_round(initiative),
+            "2" => change_initiative_name(initiative),
             _ => break,
         }
     }
-    refresh(String::from("MAIN MENU"), MAIN_MENU_OPTIONS);
+    refresh(String::from("MAIN MENU"), MAIN_MENU_OPTIONS, &initiative);
 }
 
-fn refresh(menu_name: String, list_of_options: &[&str]) {
+fn refresh(menu_name: String, list_of_options: &[&str], initiative: &Initiative) {
     print_header(menu_name, '-');
+    print_initiative(initiative);
     print_options(list_of_options);
 }
 
-fn change_round(initiative: &mut Initiative) {
+fn change_initiative_round(initiative: &mut Initiative) {
     loop {
         println!("Enter the new round number: ");
         let option_result = take_option();
@@ -127,7 +131,13 @@ fn change_round(initiative: &mut Initiative) {
             break;
         }
     }
-    refresh(String::from("MAIN MENU"), MAIN_MENU_OPTIONS);
+    refresh(String::from("MAIN MENU"), MAIN_MENU_OPTIONS, &initiative);
+}
+
+fn change_initiative_name(initiative: &mut Initiative) {
+    println!("Enter new round name: ");
+    let option_result = take_option();
+    initiative.fight_name = option_result.unwrap();
 }
 
 fn add_effect() {
@@ -135,8 +145,9 @@ fn add_effect() {
 }
 
 fn add_combatant(initiative: &mut Initiative) {
-    println!("ADD_COMBATANT()");
-    
+    // println!("ADD_COMBATANT()");
+    // println!();
+    // let option = take_option();
 }
 
 fn take_option() -> io::Result<String> {
@@ -147,6 +158,8 @@ fn take_option() -> io::Result<String> {
 
 fn print_initiative(initiative: &Initiative) {
     println!("{:-^80}", "");
+    println!("{:^80}", initiative.fight_name);
+    println!("{:^80}", initiative.round);
     for i in 0..initiative.combatants.len() {
         println!("[{}]: {}", initiative.combatants[i].initiative, initiative.combatants[i].name);
     }
