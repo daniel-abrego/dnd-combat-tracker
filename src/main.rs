@@ -1,6 +1,7 @@
-use std::io;
+use std::io::{self, Write};
 
 const MAIN_MENU_OPTIONS: &[&str; 4] = &["NEXT", "EDIT", "ADD EFFECT", "ADD COMBATANT"];
+const EDIT_MENU_OPTIONS: &[&str; 2] = &["CHANGE ROUND", "CHANGE COMBAT NAME"];
 
 struct Initiative {
     round: u32,
@@ -12,7 +13,7 @@ struct Initiative {
 struct Combatant {
     name: String,
     initiative: u32,
-    dex_mod: u32
+    dex_mod: i32
 }
 
 // enum CONDITIONS {
@@ -84,7 +85,7 @@ fn main_menu(initiative: &mut Initiative) {
             "1" => next(initiative),
             "2" => edit(initiative),
             "3" => add_effect(),
-            "4" => add_combatant(initiative),
+            "4" => {add_combatant(initiative); refresh(String::from("MAIN MENU"), MAIN_MENU_OPTIONS, &initiative)},
             "r" => {print_header(String::from("MAIN MENU"), '-'); print_initiative(&initiative); print_options(MAIN_MENU_OPTIONS)},
             "x" => break,
             _ => println!("unrecognized argument: {}", option),
@@ -100,8 +101,7 @@ fn next(initiative: &mut Initiative) {
 
 fn edit(initiative: &mut Initiative) {
     print_header(String::from("EDIT"), '-');
-    let mut options = ["CHANGE ROUND", "CHANGE COMBAT NAME"];
-    print_options(&mut options);
+    print_options(EDIT_MENU_OPTIONS);
     loop {
         let option_result = take_option();
         let option = option_result.unwrap();
@@ -123,7 +123,7 @@ fn refresh(menu_name: String, list_of_options: &[&str], initiative: &Initiative)
 
 fn change_initiative_round(initiative: &mut Initiative) {
     loop {
-        println!("Enter the new round number: ");
+        print!("Enter the new round number: ");
         let option_result = take_option();
         let option = option_result.unwrap().trim().parse::<u32>();
         if !option.is_err() {
@@ -135,7 +135,7 @@ fn change_initiative_round(initiative: &mut Initiative) {
 }
 
 fn change_initiative_name(initiative: &mut Initiative) {
-    println!("Enter new round name: ");
+    print!("Enter new round name: ");
     let option_result = take_option();
     initiative.fight_name = option_result.unwrap();
 }
@@ -145,12 +145,37 @@ fn add_effect() {
 }
 
 fn add_combatant(initiative: &mut Initiative) {
-    // println!("ADD_COMBATANT()");
-    // println!();
-    // let option = take_option();
+    print!("Enter your combatant name: ");
+    let combatant_name = take_option();
+    print!("Enter your combatant initiative: ");
+    let combatant_initiative = take_option();
+    print!("Enter your combatant dex modifier: [defaults 0] ");
+    let combatant_dex_mod = take_option();
+    let new_combatant = Combatant {
+        name: combatant_name.unwrap(),
+        initiative: combatant_initiative.unwrap().trim().parse::<u32>().unwrap(),
+        dex_mod: combatant_dex_mod.unwrap().trim().parse::<i32>().unwrap(),
+    };
+    //TODO move through initiative Vec and find spot for new combatant based on initiative and dex_mod to resolve ties
+    let mut insert_idx = 0;
+    for i in 0..initiative.combatants.len() {
+        if initiative.combatants[i].initiative == new_combatant.initiative {
+            if initiative.combatants[i].dex_mod < new_combatant.dex_mod {
+                insert_idx = i;
+                break;
+            }
+        }
+        else if initiative.combatants[i].initiative < new_combatant.initiative {
+            insert_idx = i;
+            break;
+        }
+    }
+
+    initiative.combatants.insert(insert_idx, new_combatant);
 }
 
 fn take_option() -> io::Result<String> {
+    io::Write::flush(&mut io::stdout()).expect("FLUSH FAILED");
     let mut buffer = String::new();
     io::stdin().read_line(&mut buffer)?;
     Ok(buffer)
@@ -161,7 +186,7 @@ fn print_initiative(initiative: &Initiative) {
     println!("{:^80}", initiative.fight_name);
     println!("{:^80}", initiative.round);
     for i in 0..initiative.combatants.len() {
-        println!("[{}]: {}", initiative.combatants[i].initiative, initiative.combatants[i].name);
+        print!("[{}]: {}\n", initiative.combatants[i].initiative, initiative.combatants[i].name);
     }
     println!("{:-^80}", "");
 }
@@ -172,5 +197,5 @@ fn print_options(list_of_options: &[&str]) {
     }
     println!("[r] to refresh screen");
     println!("[x] to exit");
-    println!("Enter Selection: ");
+    print!("Enter Selection: ");
 }
