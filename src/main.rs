@@ -1,6 +1,8 @@
 use std::io;
 
+const MAIN_MENU_NAME: &str = "MAIN MENU";
 const MAIN_MENU_OPTIONS: &[&str; 4] = &["NEXT", "EDIT", "ADD EFFECT", "ADD COMBATANT"];
+const EDIT_MENU_NAME: &str = "EDIT";
 const EDIT_MENU_OPTIONS: &[&str; 2] = &["CHANGE ROUND", "CHANGE COMBAT NAME"];
 
 struct Initiative {
@@ -36,7 +38,8 @@ struct Combatant {
 
 fn main() {
     println!("Hello, world!");
-    print_header(String::from("DND-COMBAT-TRACKER"), '*');
+    let program_header: &str = "DND-COMBAT-TRACKER";
+    print_header(program_header, '*');
 
     let mut initiative = Initiative {
         round: 0,
@@ -48,7 +51,7 @@ fn main() {
     main_menu(&mut initiative);
 }
 
-fn print_header(header: String, key: char) {
+fn print_header(header: &str, key: char) {
     if key == '*' {
         print_major_header(header);
     } else {
@@ -56,13 +59,13 @@ fn print_header(header: String, key: char) {
     }
 }
 
-fn print_major_header(header: String) {
+fn print_major_header(header: &str) {
     println!("{:*^80}", "");
     println!("{:^80}", header);
     println!("{:*^80}", "");
 }
 
-fn print_minor_header(minor_header: String) {
+fn print_minor_header(minor_header: &str) {
     println!("{:-^80}", "");
     println!("{:^80}", minor_header);
     println!("{:-^80}", "");
@@ -72,7 +75,7 @@ fn print_minor_header(minor_header: String) {
  * MAIN MENU
  */
 fn main_menu(initiative: &mut Initiative) {
-    print_header(String::from("MAIN MENU"), '-');
+    print_header(MAIN_MENU_NAME, '-');
     print_initiative(&initiative);
     initiative.fight_name = String::from("TESTING MAIN MENU");
 
@@ -85,8 +88,8 @@ fn main_menu(initiative: &mut Initiative) {
             "1" => next(initiative),
             "2" => edit(initiative),
             "3" => add_effect(),
-            "4" => {add_combatant(initiative); refresh(String::from("MAIN MENU"), MAIN_MENU_OPTIONS, &initiative)},
-            "r" => {print_header(String::from("MAIN MENU"), '-'); print_initiative(&initiative); print_options(MAIN_MENU_OPTIONS)},
+            "4" => {add_combatant(initiative); refresh(MAIN_MENU_NAME, MAIN_MENU_OPTIONS, &initiative)},
+            "r" => {print_header(MAIN_MENU_NAME, '-'); print_initiative(&initiative); print_options(MAIN_MENU_OPTIONS)},
             "x" => break,
             _ => println!("unrecognized argument: {}", option),
         }
@@ -100,11 +103,11 @@ fn next(initiative: &mut Initiative) {
         initiative.curr_combatant_idx = 0;
         initiative.round += 1;
     }
-    refresh(String::from("MAIN MENU"), MAIN_MENU_OPTIONS, &initiative);
+    refresh(MAIN_MENU_NAME, MAIN_MENU_OPTIONS, &initiative);
 }
 
 fn edit(initiative: &mut Initiative) {
-    print_header(String::from("EDIT"), '-');
+    print_header(EDIT_MENU_NAME, '-');
     print_options(EDIT_MENU_OPTIONS);
     loop {
         let option_result = take_option();
@@ -116,10 +119,10 @@ fn edit(initiative: &mut Initiative) {
             _ => break,
         }
     }
-    refresh(String::from("MAIN MENU"), MAIN_MENU_OPTIONS, &initiative);
+    refresh(MAIN_MENU_NAME, MAIN_MENU_OPTIONS, &initiative);
 }
 
-fn refresh(menu_name: String, list_of_options: &[&str], initiative: &Initiative) {
+fn refresh(menu_name: &str, list_of_options: &[&str], initiative: &Initiative) {
     print_header(menu_name, '-');
     print_initiative(initiative);
     print_options(list_of_options);
@@ -135,7 +138,7 @@ fn change_initiative_round(initiative: &mut Initiative) {
             break;
         }
     }
-    refresh(String::from("MAIN MENU"), MAIN_MENU_OPTIONS, &initiative);
+    refresh(MAIN_MENU_NAME, MAIN_MENU_OPTIONS, &initiative);
 }
 
 fn change_initiative_name(initiative: &mut Initiative) {
@@ -178,6 +181,7 @@ fn add_combatant(initiative: &mut Initiative) {
         insert_idx = initiative.combatants.len();
     }
     initiative.combatants.insert(insert_idx, new_combatant);
+    refresh(MAIN_MENU_NAME, MAIN_MENU_OPTIONS, &initiative);
 }
 
 fn take_option() -> io::Result<String> {
@@ -192,7 +196,11 @@ fn print_initiative(initiative: &Initiative) {
     println!("{:^80}", initiative.fight_name);
     println!("{:^80}", initiative.round);
     for i in 0..initiative.combatants.len() {
-        print!("[{}]: {}\n", initiative.combatants[i].initiative, initiative.combatants[i].name);
+        let mut curr_initiative_char = ' ';
+        if i == initiative.curr_combatant_idx {
+            curr_initiative_char = '>';
+        }
+        print!(" {} [{}]({}): {}\n", curr_initiative_char, initiative.combatants[i].initiative, initiative.combatants[i].dex_mod, initiative.combatants[i].name);
     }
     println!("{:-^80}", "");
 }
