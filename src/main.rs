@@ -1,4 +1,4 @@
-use std::io::{self, Write};
+use std::io;
 
 const MAIN_MENU_OPTIONS: &[&str; 4] = &["NEXT", "EDIT", "ADD EFFECT", "ADD COMBATANT"];
 const EDIT_MENU_OPTIONS: &[&str; 2] = &["CHANGE ROUND", "CHANGE COMBAT NAME"];
@@ -157,7 +157,7 @@ fn add_combatant(initiative: &mut Initiative) {
         dex_mod: combatant_dex_mod.unwrap().trim().parse::<i32>().unwrap(),
     };
     //TODO move through initiative Vec and find spot for new combatant based on initiative and dex_mod to resolve ties
-    let mut insert_idx = 0;
+    let mut insert_idx = usize::MAX;
     for i in 0..initiative.combatants.len() {
         if initiative.combatants[i].initiative == new_combatant.initiative {
             if initiative.combatants[i].dex_mod < new_combatant.dex_mod {
@@ -170,7 +170,9 @@ fn add_combatant(initiative: &mut Initiative) {
             break;
         }
     }
-
+    if insert_idx == usize::MAX {
+        insert_idx = initiative.combatants.len();
+    }
     initiative.combatants.insert(insert_idx, new_combatant);
 }
 
