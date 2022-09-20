@@ -7,7 +7,7 @@ struct Initiative {
     round: u32,
     fight_name: String,
     combatants: Vec<Combatant>,
-    curr_combatant_idx: i32
+    curr_combatant_idx: usize
 }
 
 struct Combatant {
@@ -42,7 +42,7 @@ fn main() {
         round: 0,
         fight_name: String::from("Test"),
         combatants: Vec::new(),
-        curr_combatant_idx: -1
+        curr_combatant_idx: 0
     };
 
     main_menu(&mut initiative);
@@ -96,6 +96,10 @@ fn main_menu(initiative: &mut Initiative) {
 fn next(initiative: &mut Initiative) {
     println!("NEXT()");
     initiative.curr_combatant_idx += 1;
+    if initiative.curr_combatant_idx == initiative.combatants.len() {
+        initiative.curr_combatant_idx = 0;
+        initiative.round += 1;
+    }
     refresh(String::from("MAIN MENU"), MAIN_MENU_OPTIONS, &initiative);
 }
 
@@ -148,9 +152,9 @@ fn add_combatant(initiative: &mut Initiative) {
     print!("Enter your combatant name: ");
     let combatant_name = take_option();
     print!("Enter your combatant initiative: ");
-    let combatant_initiative = take_option();
+    let combatant_initiative = take_option(); // TODO CHECK FOR NUMERICAL INPUT
     print!("Enter your combatant dex modifier: [defaults 0] ");
-    let combatant_dex_mod = take_option();
+    let combatant_dex_mod = take_option(); // TODO CHECK FOR NUMERICAL INPUT
     let new_combatant = Combatant {
         name: combatant_name.unwrap(),
         initiative: combatant_initiative.unwrap().trim().parse::<u32>().unwrap(),
